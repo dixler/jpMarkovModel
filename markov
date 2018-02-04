@@ -9,7 +9,8 @@ class p:
     def __init__(self, l=0, root=None):
         " "
         self.count = 0
-        if l == 3:
+        if l == 1:
+        #if l == 3:
             self.transition = {'a':root, 'i':root, 'u':root, 'e':root, 'o':root,
                             'ka':root, 'ki':root, 'ku':root, 'ke':root, 'ko':root,
                             'ga':root, 'gi':root, 'gu':root, 'ge':root, 'go':root,
@@ -136,6 +137,10 @@ def is_jp(word=""):
                 return []
     return syllable_list
 
+def print_percent(count=0, total=1, text=''):
+    print('['+str(count)+'/'+str(total)+']', text)
+    return
+
 def generateModel():
     """
     using our algorithm to stem japanese, we can traverse through japanese words and retrieve syllables
@@ -143,17 +148,23 @@ def generateModel():
     """
     start = p(0, None)
     pos = start
-    filenames = gen_filenames('/home/kdixle2/data')
-    for filename in filenames:
-        print(filename)
+    filenames = gen_filenames('/home/halide/code/ling/data')
+    #filenames = gen_filenames('/home/kdixle/markov/data')
+    total_files = len(filenames)
+    for count, filename in enumerate(filenames):
+        print_percent(count, total_files, filename)
         lines = extract_jp(filename)
         if lines == None:
             continue
         words = [re.sub('[!.?\';,\-"]', ' ', word.lower()) for line in lines for word in line.split(' ')]
         words = [formatted for word in words for formatted in word.split()]
-        for word in words:
+
+        total_words = len(words)
+        for count_word, word in enumerate(words):
             syllables = is_jp(word)
-            for syllable in syllables:
+
+            total_syllables = len(syllables)
+            for count, syllable in enumerate(syllables):
                 pos = start.transition[syllable]
                 pos.count += 1
     return start
@@ -161,7 +172,9 @@ def generateModel():
 def babble(model, start=None):
     count = 0
     probability = []
-    for syllable, state in start.transition.items():
+    total = len(start.transition.items())
+    for percent, (syllable, state) in enumerate(start.transition.items()):
+        print_percent(percent, total, '')
         count += state.count
         for i in range(0, state.count):
             probability.append((syllable, state)) 
@@ -174,9 +187,10 @@ def babble(model, start=None):
 
 random.seed(None)
 model = generateModel()
-state = generateModel()
+state = model
 string = ""
-for i in range(0,100):
+for count,i in enumerate(range(0,100)):
+    print_percent(count, 100, '')
     syllable, state = babble(model, state)
     string += syllable
 print(string)
