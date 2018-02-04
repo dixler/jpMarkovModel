@@ -1,0 +1,192 @@
+#!/bin/python
+"parser"
+import os
+import re
+import sys
+
+jp_counter =   [
+    {'a':0, 'i':0, 'u':0, 'e':0, 'o':0,
+     'ka':0, 'ki':0, 'ku':0, 'ke':0, 'ko':0,
+     'ga':0, 'gi':0, 'gu':0, 'ge':0, 'go':0,
+     'sa':0, 'shi':0, 'su':0, 'se':0, 'so':0,
+     'za':0, 'ji':0, 'zu':0, 'ze':0, 'zo':0,
+     'ta':0, 'ti':0, 'tu':0, 'te':0, 'to':0,
+     'chi':0, 'tsu':0,
+     'da':0, 'de':0, 'do':0, 'di':0, 'du':0,
+     'na':0, 'ni':0, 'nu':0, 'ne':0, 'no':0,
+     'n':0,
+     'ha':0, 'hi':0, 'fu':0, 'he':0, 'ho':0,
+     'ba':0, 'bi':0, 'bu':0, 'be':0, 'bo':0,
+     'pa':0, 'pi':0, 'pu':0, 'pe':0, 'po':0,
+     'ma':0, 'mi':0, 'mu':0, 'me':0, 'mo':0,
+     'ya':0, 'yu':0, 'yo':0,
+     'ra':0, 'ri':0, 'ru':0, 're':0, 'ro':0,
+     'wa':0, 'wo':0,
+     'fa':0, 'fi':0, 'fe':0, 'fo':0,
+     'che':0, 'cho':0, 'ja':0,
+     'ju':0, 'je':0, 'jo':0, 'she':0, 'kya':0, 'gya':0, 'sha':0,
+     'cha':0, 'nya':0, 'hya':0, 'bya':0, 'pya':0, 'mya':0,
+     'rya':0, 'kyu':0, 'gyu':0, 'shu':0, 'chu':0, 'nyu':0,
+     'hyu':0, 'byu':0, 'pyu':0, 'myu':0, 'ryu':0, 'kyo':0,
+     'gyo':0, 'sho':0, 'nyo':0, 'hyo':0, 'byo':0, 'pyo':0,
+     'myo':0, 'ryo':0},
+    {'a':0, 'i':0, 'u':0, 'e':0, 'o':0,
+     'ka':0, 'ki':0, 'ku':0, 'ke':0, 'ko':0,
+     'ga':0, 'gi':0, 'gu':0, 'ge':0, 'go':0,
+     'sa':0, 'shi':0, 'su':0, 'se':0, 'so':0,
+     'za':0, 'ji':0, 'zu':0, 'ze':0, 'zo':0,
+     'ta':0, 'ti':0, 'tu':0, 'te':0, 'to':0,
+     'chi':0, 'tsu':0,
+     'da':0, 'de':0, 'do':0, 'di':0, 'du':0,
+     'na':0, 'ni':0, 'nu':0, 'ne':0, 'no':0,
+     'n':0,
+     'ha':0, 'hi':0, 'fu':0, 'he':0, 'ho':0,
+     'ba':0, 'bi':0, 'bu':0, 'be':0, 'bo':0,
+     'pa':0, 'pi':0, 'pu':0, 'pe':0, 'po':0,
+     'ma':0, 'mi':0, 'mu':0, 'me':0, 'mo':0,
+     'ya':0, 'yu':0, 'yo':0,
+     'ra':0, 'ri':0, 'ru':0, 're':0, 'ro':0,
+     'wa':0, 'wo':0,
+     'fa':0, 'fi':0, 'fe':0, 'fo':0,
+     'che':0, 'cho':0, 'ja':0,
+     'ju':0, 'je':0, 'jo':0, 'she':0, 'kya':0, 'gya':0, 'sha':0,
+     'cha':0, 'nya':0, 'hya':0, 'bya':0, 'pya':0, 'mya':0,
+     'rya':0, 'kyu':0, 'gyu':0, 'shu':0, 'chu':0, 'nyu':0,
+     'hyu':0, 'byu':0, 'pyu':0, 'myu':0, 'ryu':0, 'kyo':0,
+     'gyo':0, 'sho':0, 'nyo':0, 'hyo':0, 'byo':0, 'pyo':0,
+     'myo':0, 'ryo':0},
+    {'a':0, 'i':0, 'u':0, 'e':0, 'o':0,
+     'ka':0, 'ki':0, 'ku':0, 'ke':0, 'ko':0,
+     'ga':0, 'gi':0, 'gu':0, 'ge':0, 'go':0,
+     'sa':0, 'shi':0, 'su':0, 'se':0, 'so':0,
+     'za':0, 'ji':0, 'zu':0, 'ze':0, 'zo':0,
+     'ta':0, 'ti':0, 'tu':0, 'te':0, 'to':0,
+     'chi':0, 'tsu':0,
+     'da':0, 'de':0, 'do':0, 'di':0, 'du':0,
+     'na':0, 'ni':0, 'nu':0, 'ne':0, 'no':0,
+     'n':0,
+     'ha':0, 'hi':0, 'fu':0, 'he':0, 'ho':0,
+     'ba':0, 'bi':0, 'bu':0, 'be':0, 'bo':0,
+     'pa':0, 'pi':0, 'pu':0, 'pe':0, 'po':0,
+     'ma':0, 'mi':0, 'mu':0, 'me':0, 'mo':0,
+     'ya':0, 'yu':0, 'yo':0,
+     'ra':0, 'ri':0, 'ru':0, 're':0, 'ro':0,
+     'wa':0, 'wo':0,
+     'fa':0, 'fi':0, 'fe':0, 'fo':0,
+     'che':0, 'cho':0, 'ja':0,
+     'ju':0, 'je':0, 'jo':0, 'she':0, 'kya':0, 'gya':0, 'sha':0,
+     'cha':0, 'nya':0, 'hya':0, 'bya':0, 'pya':0, 'mya':0,
+     'rya':0, 'kyu':0, 'gyu':0, 'shu':0, 'chu':0, 'nyu':0,
+     'hyu':0, 'byu':0, 'pyu':0, 'myu':0, 'ryu':0, 'kyo':0,
+     'gyo':0, 'sho':0, 'nyo':0, 'hyo':0, 'byo':0, 'pyo':0,
+     'myo':0, 'ryo':0}
+]
+
+def gen_filenames(path=''):
+    os.chdir(path)
+    song_files = list(filter(lambda x: x[-4:] == '.txt', os.listdir()))
+    return song_files
+
+def extract_jp(filename=''):
+    current_file = open(filename)
+    # except non ascii
+    try:
+        data = current_file.read().split('\n')
+    except Exception:
+        return None
+    current_file.close()
+
+    begin = -1
+    end = -1
+    for count,line in enumerate(data):
+        if begin == -1:
+            if len(line) == line.count('-') == 107:
+                begin = count+1
+        else:
+            if len(line) == line.count('-'):
+                end = count
+                break
+    if begin == end == -1:
+        # this in as issue
+        return None
+    data = list(filter(lambda x: x[:3] != '\t\t\t', data[begin:end]))
+    return data
+
+def is_jp(word=""):
+    "determines if the string is japanese by our limited syllabic dictionary"
+    jp_syllables = {'a':True, 'i':True, 'u':True, 'e':True, 'o':True, 
+                    'ka':True, 'ki':True, 'ku':True, 'ke':True, 'ko':True,
+                    'ga':True, 'gi':True, 'gu':True, 'ge':True, 'go':True,
+                    'sa':True, 'shi':True, 'su':True, 'se':True, 'so':True,
+                    'za':True, 'ji':True, 'zu':True, 'ze':True, 'zo':True,
+                    'ta':True, 'ti':True, 'tu':True, 'te':True, 'to':True,
+                    'chi':True, 'tsu':True, 
+                    'da':True, 'de':True, 'do':True, 'di':True, 'du':True,
+                    'na':True, 'ni':True, 'nu':True, 'ne':True, 'no':True,
+                    'n':True,
+                    'ha':True, 'hi':True, 'fu':True, 'he':True, 'ho':True,
+                    'ba':True, 'bi':True, 'bu':True, 'be':True, 'bo':True,
+                    'pa':True, 'pi':True, 'pu':True, 'pe':True, 'po':True,
+                    'ma':True, 'mi':True, 'mu':True, 'me':True, 'mo':True,
+                    'ya':True, 'yu':True, 'yo':True,
+                    'ra':True, 'ri':True, 'ru':True, 're':True, 'ro':True,
+                    'wa':True, 'wo':True,
+                    'fa':True, 'fi':True, 'fe':True, 'fo':True,
+                    'che':True, 'cho':True, 'ja':True,
+                    'ju':True, 'je':True, 'jo':True, 'she':True, 'kya':True, 'gya':True, 'sha':True,
+                    'cha':True, 'nya':True, 'hya':True, 'bya':True, 'pya':True, 'mya':True,
+                    'rya':True, 'kyu':True, 'gyu':True, 'shu':True, 'chu':True, 'nyu':True,
+                    'hyu':True, 'byu':True, 'pyu':True, 'myu':True, 'ryu':True, 'kyo':True,
+                    'gyo':True, 'sho':True, 'nyo':True, 'hyo':True, 'byo':True, 'pyo':True,
+                    'myo':True, 'ryo':True}
+    index = 0
+    syllable_list = []
+    while index < len(word):
+        for num in range(3,0,-1):
+            proposed_syllable = word[index:index+num]
+            if jp_syllables.get(proposed_syllable) != None:
+                index += num
+                syllable_list.append(proposed_syllable)
+                break
+            if num == 1:
+                return False
+    for count,syl in enumerate(syllable_list):
+        jp_counter[count%len(jp_counter)][syl] += 1
+
+    return True
+    # else not japanese
+    # exempt since we all know they don't have v's
+    #'wi':True, 'we':True, 
+def find_loan(wordlist=[]):
+    natural = []
+    loaners = []
+    for word in wordlist:
+        if is_jp(word):
+            natural.append(word)
+        else:
+            loaners.append(word)
+
+    return natural,loaners
+
+def main():
+    " "
+    filenames = gen_filenames('/home/halide/code/ling')
+    for filename in filenames:
+        print(filename)
+        lines = extract_jp(filename)
+        if lines == None:
+            continue
+        words = [re.sub('[!.?\';,\-"]', ' ', word.lower()) for line in lines for word in line.split(' ')]
+        words = [formatted for word in words for formatted in word.split()]
+        natural,loaners = find_loan(words)
+        print("natural:",natural)
+        print("loaners:",loaners)
+    return
+
+sentence = "this is an example"
+print()
+for i in sentence.split(' '):
+    print(i,'japanese?',is_jp(i))
+#main()
+#for count,vals in enumerate(jp_counter):
+#print(count,vals)

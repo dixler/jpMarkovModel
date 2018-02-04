@@ -1,0 +1,182 @@
+#!/usr/bin/python3
+"markov chain to approximate japanese"
+import os
+import re
+import random
+
+class p:
+    " the state in a markov chain"
+    def __init__(self, l=0, root=None):
+        " "
+        self.count = 0
+        if l == 3:
+            self.transition = {'a':root, 'i':root, 'u':root, 'e':root, 'o':root,
+                            'ka':root, 'ki':root, 'ku':root, 'ke':root, 'ko':root,
+                            'ga':root, 'gi':root, 'gu':root, 'ge':root, 'go':root,
+                            'sa':root, 'shi':root, 'su':root, 'se':root, 'so':root,
+                            'za':root, 'ji':root, 'zu':root, 'ze':root, 'zo':root,
+                            'ta':root, 'ti':root, 'tu':root, 'te':root, 'to':root,
+                            'chi':root, 'tsu':root,
+                            'da':root, 'de':root, 'do':root, 'di':root, 'du':root,
+                            'na':root, 'ni':root, 'nu':root, 'ne':root, 'no':root,
+                            'n':root,
+                            'ha':root, 'hi':root, 'fu':root, 'he':root, 'ho':root,
+                            'ba':root, 'bi':root, 'bu':root, 'be':root, 'bo':root,
+                            'pa':root, 'pi':root, 'pu':root, 'pe':root, 'po':root,
+                            'ma':root, 'mi':root, 'mu':root, 'me':root, 'mo':root,
+                            'ya':root, 'yu':root, 'yo':root,
+                            'ra':root, 'ri':root, 'ru':root, 're':root, 'ro':root,
+                            'wa':root, 'wo':root,
+                            'fa':root, 'fi':root, 'fe':root, 'fo':root,
+                            'che':root, 'cho':root, 'ja':root,
+                            'ju':root, 'je':root, 'jo':root, 'she':root, 'kya':root, 'gya':root, 'sha':root,
+                            'cha':root, 'nya':root, 'hya':root, 'bya':root, 'pya':root, 'mya':root,
+                            'rya':root, 'kyu':root, 'gyu':root, 'shu':root, 'chu':root, 'nyu':root,
+                            'hyu':root, 'byu':root, 'pyu':root, 'myu':root, 'ryu':root, 'kyo':root,
+                            'gyo':root, 'sho':root, 'nyo':root, 'hyo':root, 'byo':root, 'pyo':root,
+                            'myo':root, 'ryo':root}
+        else:
+            if l == 0:
+                root = self
+            l = l+1
+            self.transition = {'a':p(l, root), 'i':p(l, root), 'u':p(l, root), 'e':p(l, root), 'o':p(l, root),
+                            'ka':p(l, root), 'ki':p(l, root), 'ku':p(l, root), 'ke':p(l, root), 'ko':p(l, root),
+                            'ga':p(l, root), 'gi':p(l, root), 'gu':p(l, root), 'ge':p(l, root), 'go':p(l, root),
+                            'sa':p(l, root), 'shi':p(l, root), 'su':p(l, root), 'se':p(l, root), 'so':p(l, root),
+                            'za':p(l, root), 'ji':p(l, root), 'zu':p(l, root), 'ze':p(l, root), 'zo':p(l, root),
+                            'ta':p(l, root), 'ti':p(l, root), 'tu':p(l, root), 'te':p(l, root), 'to':p(l, root),
+                            'chi':p(l, root), 'tsu':p(l, root),
+                            'da':p(l, root), 'de':p(l, root), 'do':p(l, root), 'di':p(l, root), 'du':p(l, root),
+                            'na':p(l, root), 'ni':p(l, root), 'nu':p(l, root), 'ne':p(l, root), 'no':p(l, root),
+                            'n':p(l, root),
+                            'ha':p(l, root), 'hi':p(l, root), 'fu':p(l, root), 'he':p(l, root), 'ho':p(l, root),
+                            'ba':p(l, root), 'bi':p(l, root), 'bu':p(l, root), 'be':p(l, root), 'bo':p(l, root),
+                            'pa':p(l, root), 'pi':p(l, root), 'pu':p(l, root), 'pe':p(l, root), 'po':p(l, root),
+                            'ma':p(l, root), 'mi':p(l, root), 'mu':p(l, root), 'me':p(l, root), 'mo':p(l, root),
+                            'ya':p(l, root), 'yu':p(l, root), 'yo':p(l, root),
+                            'ra':p(l, root), 'ri':p(l, root), 'ru':p(l, root), 're':p(l, root), 'ro':p(l, root),
+                            'wa':p(l, root), 'wo':p(l, root),
+                            'fa':p(l, root), 'fi':p(l, root), 'fe':p(l, root), 'fo':p(l, root),
+                            'che':p(l, root), 'cho':p(l, root), 'ja':p(l, root),
+                            'ju':p(l, root), 'je':p(l, root), 'jo':p(l, root), 'she':p(l, root), 'kya':p(l, root), 'gya':p(l, root), 'sha':p(l, root),
+                            'cha':p(l, root), 'nya':p(l, root), 'hya':p(l, root), 'bya':p(l, root), 'pya':p(l, root), 'mya':p(l, root),
+                            'rya':p(l, root), 'kyu':p(l, root), 'gyu':p(l, root), 'shu':p(l, root), 'chu':p(l, root), 'nyu':p(l, root),
+                            'hyu':p(l, root), 'byu':p(l, root), 'pyu':p(l, root), 'myu':p(l, root), 'ryu':p(l, root), 'kyo':p(l, root),
+                            'gyo':p(l, root), 'sho':p(l, root), 'nyo':p(l, root), 'hyo':p(l, root), 'byo':p(l, root), 'pyo':p(l, root),
+                            'myo':p(l, root), 'ryo':p(l, root)}
+
+
+def gen_filenames(path=''):
+    os.chdir(path)
+    song_files = list(filter(lambda x: x[-4:] == '.txt', os.listdir()))
+    return song_files
+
+def extract_jp(filename=''):
+    current_file = open(filename)
+    # except non ascii
+    try:
+        data = current_file.read().split('\n')
+    except Exception:
+        return None
+    current_file.close()
+
+    begin = -1
+    end = -1
+    for count,line in enumerate(data):
+        if begin == -1:
+            if len(line) == line.count('-') == 107:
+                begin = count+1
+        else:
+            if len(line) == line.count('-'):
+                end = count
+                break
+    if begin == end == -1:
+        # this in as issue
+        return None
+    data = list(filter(lambda x: x[:3] != '\t\t\t', data[begin:end]))
+    return data
+
+def is_jp(word=""):
+    "determines if the string is japanese by our limited syllabic dictionary"
+    jp_syllables = {'a':True, 'i':True, 'u':True, 'e':True, 'o':True, 
+                    'ka':True, 'ki':True, 'ku':True, 'ke':True, 'ko':True,
+                    'ga':True, 'gi':True, 'gu':True, 'ge':True, 'go':True,
+                    'sa':True, 'shi':True, 'su':True, 'se':True, 'so':True,
+                    'za':True, 'ji':True, 'zu':True, 'ze':True, 'zo':True,
+                    'ta':True, 'ti':True, 'tu':True, 'te':True, 'to':True,
+                    'chi':True, 'tsu':True, 
+                    'da':True, 'de':True, 'do':True, 'di':True, 'du':True,
+                    'na':True, 'ni':True, 'nu':True, 'ne':True, 'no':True,
+                    'n':True,
+                    'ha':True, 'hi':True, 'fu':True, 'he':True, 'ho':True,
+                    'ba':True, 'bi':True, 'bu':True, 'be':True, 'bo':True,
+                    'pa':True, 'pi':True, 'pu':True, 'pe':True, 'po':True,
+                    'ma':True, 'mi':True, 'mu':True, 'me':True, 'mo':True,
+                    'ya':True, 'yu':True, 'yo':True,
+                    'ra':True, 'ri':True, 'ru':True, 're':True, 'ro':True,
+                    'wa':True, 'wo':True,
+                    'fa':True, 'fi':True, 'fe':True, 'fo':True,
+                    'che':True, 'cho':True, 'ja':True,
+                    'ju':True, 'je':True, 'jo':True, 'she':True, 'kya':True, 'gya':True, 'sha':True,
+                    'cha':True, 'nya':True, 'hya':True, 'bya':True, 'pya':True, 'mya':True,
+                    'rya':True, 'kyu':True, 'gyu':True, 'shu':True, 'chu':True, 'nyu':True,
+                    'hyu':True, 'byu':True, 'pyu':True, 'myu':True, 'ryu':True, 'kyo':True,
+                    'gyo':True, 'sho':True, 'nyo':True, 'hyo':True, 'byo':True, 'pyo':True,
+                    'myo':True, 'ryo':True}
+    index = 0
+    syllable_list = []
+    while index < len(word):
+        for num in range(3,0,-1):
+            proposed_syllable = word[index:index+num]
+            if jp_syllables.get(proposed_syllable) != None:
+                index += num
+                syllable_list.append(proposed_syllable)
+                break
+            if num == 1:
+                return []
+    return syllable_list
+
+def generateModel():
+    """
+    using our algorithm to stem japanese, we can traverse through japanese words and retrieve syllables
+    we can then use those syllables to traverse to the next node and increment that node's count.
+    """
+    start = p(0, None)
+    pos = start
+    filenames = gen_filenames('/home/kdixle2/data')
+    for filename in filenames:
+        print(filename)
+        lines = extract_jp(filename)
+        if lines == None:
+            continue
+        words = [re.sub('[!.?\';,\-"]', ' ', word.lower()) for line in lines for word in line.split(' ')]
+        words = [formatted for word in words for formatted in word.split()]
+        for word in words:
+            syllables = is_jp(word)
+            for syllable in syllables:
+                pos = start.transition[syllable]
+                pos.count += 1
+    return start
+
+def babble(model, start=None):
+    count = 0
+    probability = []
+    for syllable, state in start.transition.items():
+        count += state.count
+        for i in range(0, state.count):
+            probability.append((syllable, state)) 
+    rand_index = random.randint(0, count)
+    if count == 0:
+        return ' ', model
+    else:
+        syllable, next_state = probability[rand_index]
+        return syllable, next_state
+
+random.seed(None)
+model = generateModel()
+state = generateModel()
+string = ""
+for i in range(0,100):
+    syllable, state = babble(model, state)
+    string += syllable
+print(string)
