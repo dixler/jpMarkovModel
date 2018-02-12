@@ -1,0 +1,12 @@
+#!/bin/python
+
+import random
+
+syllables = ['a', 'i', 'u', 'e', 'o', 'ka', 'ki', 'ku', 'ke', 'ko', 'ga', 'gi', 'gu', 'ge', 'go', 'sa', 'shi', 'su', 'se', 'so', 'za', 'ji', 'zu', 'ze', 'zo', 'ta', 'ti', 'tu', 'te', 'to', 'chi', 'tsu', 'da', 'de', 'do', 'di', 'du', 'na', 'ni', 'nu', 'ne', 'no', 'n', 'ha', 'hi', 'fu', 'he', 'ho', 'ba', 'bi', 'bu', 'be', 'bo', 'pa', 'pi', 'pu', 'pe', 'po', 'ma', 'mi', 'mu', 'me', 'mo', 'ya', 'yu', 'yo', 'ra', 'ri', 'ru', 're', 'ro', 'wa', 'wo', 'fa', 'fi', 'fe', 'fo', 'che', 'cho', 'ja', 'ju', 'je', 'jo', 'she', 'kya', 'gya', 'sha', 'cha', 'nya', 'hya', 'bya', 'pya', 'mya', 'rya', 'kyu', 'gyu', 'shu', 'chu', 'nyu', 'hyu', 'byu', 'pyu', 'myu', 'ryu', 'kyo', 'gyo', 'sho', 'nyo', 'hyo', 'byo', 'pyo', 'myo', 'ryo']
+
+word = ""
+for i in range(0, 100):
+   indx = random.randrange(0,len(syllables))
+   word += syllables[indx]+' '
+print(word)
+   
